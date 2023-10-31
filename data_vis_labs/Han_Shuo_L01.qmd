@@ -1,0 +1,255 @@
+---
+title: "L01 Introduction"
+subtitle: "Data Visualization (STAT 302)" 
+author: "Shuo Han"
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    link-external-newwindow: true
+
+execute:
+  warning: false
+  echo: true
+
+from: markdown+emoji 
+---
+
+## Load packages & data :white_check_mark:
+
+```{r}
+#| label: load-packages
+
+# Load package(s)
+library(tidyverse)
+
+# load data
+load("data/legosets.rda")
+
+## legosets
+## View(legosets)
+## 
+```
+
+::: callout-tip
+## Organization is important!
+
+1.  All packages should always be loaded at the TOP of the document.
+
+2.  All data should be in your `/data` subdirectory. Data loading should go at the top of the document under the libraries.
+:::
+
+## Tasks :white_check_mark:
+
+## Exercise 1 :white_check_mark:
+
+Let's delve into why data visualizations are important.
+
+### Visualization 1
+
+Read the following article and answer the following questions.
+
+[bars_vs_grocery_stores](https://flowingdata.com/2014/05/29/bars-versus-grocery-stores-around-the-world/)
+
+1) List one thing you learned from the article?
+
+**Data Visualization is a nice way for us to identify the regional differences for a specific problem**
+
+2) How did the main visualization (United States) enhance the article?
+
+**The author mentions his way to visualize the comparison between the number of grocery stores and bars in the US step by step in words. Sometimes, readers may not able to see the actual difference obviously. However, by looking at the main visualization, we can see that the locally difference between the number of grocery stores and bars in the US with ratios, so the comparison is much better instead of a binary one. It shows a better comparison in details.**
+
+3) List at least one thing you liked about the [United States] graphic and one thing you think could be improved.
+
+**like: By looking at the main visualization with ratios, we can see that the locally difference between the number of grocery stores and bars in the US with ratios, so the comparison is much better instead of a binary one and we may see the trend of variations locally.**
+**improve: We may do state-level comparisons and city-level comparisons to see the differences better in details.**
+
+<br>
+
+### Visualization 2
+
+Open this [dashboard](https://edgarruiz.shinyapps.io/db-dashboard/) and answer the following questions.
+
+1) What story is this dashboard telling and how do the visualizations enhance that?
+
+**The left dashboard tells the total flight of each month in the year, and the right dashboard tells the top 10 destination airports for Delta Air Lines Inc. By visualizations, we can see the variations of total flights for Delta Air Lines Inc among these months, which is of relatively small variation. We can see the number of flight for top 10 destination airports for Delta Air Lines Inc, and there are still great differences between these numbers of flight for top 10 destinations, and the top one is even triple of others, which can be obviously seen from the dashboard. Visualizatons enhances our undenstanding of the data**
+
+
+2) What might a dashboard provide that a static graphic cannot.
+
+**A dashboard allows users to access data in real-time or near real-time, whereas a static graphic is a fixed image that shows a particular set of data at a specific moment in time. So a dashboard can provide us with real-time data that a static graphic cannot**
+
+## Exercise 2 :white_check_mark:
+
+Let's look at some interesting patterns in the history of LEGO! We'll be using data from the [`lego` package](https://github.com/seankross/lego) located `data/legosets.rda`.
+
+First, let's look at the average cost of LEGO sets over time. The main variable of interest here is `USD_MSRP`, or the manufacturer's suggested retail price in constant dollars.
+
+::: {.callout-tip icon=false}
+
+## Solution
+
+```{r}
+#| label: yearly-avg-price
+
+# data_wrangling
+lego_avg <- legosets %>%  # same as |>  # (x to y)
+  group_by(Year) %>%
+  summarise(avg_usd_msrp = mean(USD_MSRP, na.rm = TRUE))
+
+# plot
+ggplot(
+  data = lego_avg, 
+  mapping = aes(x = Year, y = avg_usd_msrp)
+  ) +
+  geom_point() + # scatter plot
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Price (USD)",
+    title = "Average price of LEGO sets",
+    subtitle = "Amounts reporting in current GDP",
+    caption = "Source: LEGO"
+  ) +
+  theme_minimal()
+
+#legosets %>%  # same as |>  # (x to y)
+#  group_by(Year) %>%
+#  summarise(avg_usd_msrp = mean(USD_MSRP, na.rm = TRUE))
+
+#ggplot(
+#  data = legosets, 
+#  mapping = aes(x = USD_MSRP, y = CAD_MSRP)
+#  ) +
+#  geom_point() + # scatter plot
+#  geom_smooth()
+```
+
+:::
+
+## Exercise 3 :white_check_mark:
+
+Let's explore how many unique themes LEGO now offers. 
+
+```{r}
+#| label: themes-barplot
+#| echo: false
+
+# data wrangling
+theme_counts <- legosets %>%
+  count(Theme)
+
+# bar plot
+theme_counts %>%
+  ggplot(aes(y = Theme, x = n)) +
+  geom_col() +    # or geom_bar(stat = "identity") +
+  labs(
+    x = "Number of Sets",
+    y = NULL
+  ) +
+  theme_minimal()
+```
+
+What is bad/ugly about the plot above?
+
+**There are too many themes shown in the plot and it is hard to find every theme. Also, these numbers of set of these themes are not sorted, so it is hard to compare among these themes and figure out the groups of themes for further comparisons to check some remarkable themes**
+
+Now remake the plot BUT with the improvements addressing the issues you noted above.
+
+:::{.callout-tip icon=false}
+## Solution
+
+```{r}
+#| label: improved-barplot
+
+# data wrangling
+theme_counts <- legosets %>%
+  count(Theme, sort = TRUE) %>%
+  mutate(Theme = fct_inorder(Theme))
+# mutate(Theme = fct_inorder(Theme) %>% fct_rev())
+
+# bar plot
+theme_counts %>%
+  filter(Theme != "Duplo", n >= 100) %>%
+  #filter(n >= 100) %>%
+  # slice_max(order_by = n, n = 5) %>%
+  ggplot(aes(y = Theme, x = n)) +
+  geom_col() +    # or geom_bar(stat = "identity") +
+  labs(
+    x = "Number of Sets",
+    y = NULL
+  ) +
+  theme_minimal()
+
+# lollipop chart
+theme_counts %>%
+  filter(Theme != "Duplo", n >= 100) %>%
+  #filter(n >= 100) %>%
+  # slice_max(order_by = n, n = 5) %>%
+  ggplot(aes(y = Theme, x = n)) +
+  geom_point() +
+  geom_segment(aes(x=0, y = Theme, xend = n, yend = Theme)) +
+  labs(
+    x = "Number of Sets",
+    y = NULL
+  ) +
+  theme_minimal()
+```
+:::
+
+## Exercise 4 :white_check_mark:
+
+Now you try, let's look at how the number of pieces per set has changed over time. Because Duplo sets are much smaller (since they're designed for toddlers), we made a special indicator variable for them shown in the code below.
+
+Use an appropriate graph to plot the average number of pieces over time. Have either separate lines or separate plots for the Duplo and Lego categories. Be sure the title, x-axis, and y-axis are properly labeled. 
+
+```{r}
+#| label: lego-pieces
+
+# data wrangling
+pieces_per_year <- legosets %>%
+  # new indicator variable
+  mutate(Duplo = ifelse(Theme == "Duplo", "Duplo", "Lego")) %>%
+  group_by(Year, Duplo) %>%
+  summarize(avg_num_pieces = mean(Pieces, na.rm = TRUE)) %>%
+  ungroup()
+
+# plot without scaling the y
+pieces_per_year %>%
+  filter(Year > 1985) %>%
+  ggplot(
+    mapping = aes(x = Year, y = avg_num_pieces, color = Duplo)
+  ) +
+  geom_point() +
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Number of Pieces",
+    color = "Lego set type",
+    title = "Average number of pieces in a LEGO set over time",
+    caption = "Source: LEGO"
+  ) +
+  theme_minimal()
+
+# facet (Small multiples -- make same plot for different subgroups in the data)
+pieces_per_year %>%
+  filter(Year > 1985) %>%
+  ggplot(
+    mapping = aes(x = Year, y = avg_num_pieces)
+  ) +
+  geom_point() + # scatter plot
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Number of pieces",
+    title = "Average number of pieces in a LEGO set over time",
+    caption = "Source: LEGO"
+  ) +
+  facet_wrap(~ Duplo, scales = "free_y") +
+  theme_minimal()
+```
+
+What trends do you notice in the plots? Are you surprised by the plots?
+
+**In the first plot, we can see that both Duplo and Lego have an upward trend in general, but Duplo has a relatively flat trend. While in the following facet plots, there are upward trends after scaling y in both Duplo and Lego plot of the average price of pieces in a LEGO set over time. I am not surprised by this, since the production technique improves, so more pieces in a LEGO set will be produced. Also, since customers are expecting for more complex and challenging products, so it also meets the expectation for customers as a company. Also, for the relatively flat upward trend in Duplo, since Duplo is designed for younger children aged 1 1/2 to 5 years old, it can not be set too hard. Thus, although it is set more challenging, there is still some restriction. Thus, it is under my expectation that there is an upward trend.**
