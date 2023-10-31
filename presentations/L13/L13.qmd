@@ -1,0 +1,113 @@
+---
+title: "L13"
+author: "Shuo Han"
+format:
+  revealjs:
+    theme: dark
+    incremental: true
+    footer: "Shuo Han"
+    logo: image/canvas.png
+---
+
+# Data Visualization {background-image="\\Images\\butler.webp" background-size="90%"}
+
+::: footer
+1
+:::
+
+## Name
+
+::: incremental
+::: columns
+::: {.column width="40%"}
+-   First name: Shuo
+:::
+
+::: {.column width="40%"}
+-   Last name: Han
+:::
+:::
+:::
+
+::: footer
+2
+:::
+
+## Class
+
+::: incremental
+-   STAT 302
+-   Datavisualization
+-   Spring 2023
+:::
+
+::: footer
+3
+:::
+
+# Canvas
+
+::: footer
+4
+:::
+
+## canvas {.scrollable}
+
+::: incremental
+-   Canvas
+-   Modules
+
+```{r, echo=FALSE, fig.cap="Canvas", out.width="50%", fig.align="center"}
+knitr::include_graphics("image/canvas.png")
+```
+
+::: aside
+Notation:
+:::
+:::
+
+::: footer
+5
+:::
+
+# Display
+
+::: footer
+6
+:::
+
+## Build A Map {.scrollable}
+
+```{r}
+#| code-line-numbers: "|15|21"
+#| echo: true
+#| output-location: slide
+
+library(tidyverse)
+load("data/legosets.rda")
+
+# data_wrangling
+lego_avg <- legosets %>%  # same as |>  # (x to y)
+  group_by(Year) %>%
+  summarise(avg_usd_msrp = mean(USD_MSRP, na.rm = TRUE))
+
+# plot
+ggplot(
+  data = lego_avg, 
+  mapping = aes(x = Year, y = avg_usd_msrp)
+  ) +
+  geom_point() + # scatter plot
+  geom_line() +
+  labs(
+    x = "Year",
+    y = "Price (USD)",
+    title = "Average price of LEGO sets",
+    subtitle = "Amounts reporting in current GDP",
+    caption = "Source: LEGO"
+  ) +
+  theme_minimal()
+```
+
+::: footer
+7
+:::
