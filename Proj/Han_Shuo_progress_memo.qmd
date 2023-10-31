@@ -1,0 +1,37 @@
+---
+title: "Progress Memo"
+subtitle: |
+  | Final Project 
+  | Data Visualization (STAT 302)
+author: "Shuo Han"
+date: 05/21/2023
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+---
+
+## Data source
+Jannesarr, B. (Year). Nobel Prize from 1901 till 2020 [Data set]. Kaggle. Retrieved from https://www.kaggle.com/datasets/bahramjannesarr/nobel-prize-from-1901-till-2020
+
+## Basic data description
+
+Number of observations: 11009
+Number of variables: 14
+Are there various types of variables (maybe the number of each type)
+missingness issues: Yes, there are missing values in variable died_country_code, name_of_university, city_of_university, country_of_university.
+
+## Why this data
+
+The dataset provides information about the gender and nationality of Nobel Prize laureates. Data visualization can help analyze the representation of different genders and nationalities over time, highlighting changes in diversity and potential disparities. This can contribute to discussions around gender equality and the recognition of achievements across various cultures and backgrounds.
+
+## Visualization plan
+
+I attempt to build an app/dashboard.
+
+### Misc
+
+May work with others later.
+
+
