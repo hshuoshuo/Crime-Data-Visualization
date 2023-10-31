@@ -1,0 +1,11 @@
+name: app2
+title:
+username:
+account: shuohan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9157483
+bundleId: 7246054
+url: https://shuohan.shinyapps.io/app2/
+when: 1684723206.75237
+lastSyncTime: 1684723206.75238
